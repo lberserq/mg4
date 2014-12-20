@@ -204,9 +204,9 @@ void CScene::setupScene()
 
     m_models.push_back(tmp);
 
-    for (int i = -4; i < 5; i+=4)
+    for (int i = -4; i < 1; i+=4)
         for (int j = -4; j < 1; j+=4)
-            for (int k = -4; k < 5; k+=4) {
+            for (int k = -4; k < 1; k+=4) {
                 int x = (i > 0) * 4 + (j > 0) * 2 + (k > 0);
                 M_TYPE type = static_cast<M_TYPE>(x % 3);
                 tmp = pool.getLast(*this, type);
