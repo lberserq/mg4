@@ -74,16 +74,17 @@ glm::vec3 Model::getColor(const SRay &m_ray, glm::vec3 out_point, glm::vec3 norm
     SRay my_ray = convert_ray(m_ray);
 
     glm::vec3 light_pos = m_scene.get_LigthPos();
+    light_pos = ApplyMat4(T, light_pos);
+
     glm::vec3 tmnormal = ApplyMat4(Tdir, normal);
     if (glm::dot(tmnormal, light_pos - out_point) < 0) {
         normal = -normal;
     }
 
+    glm::vec3  loc_pos = ApplyMat4(Tinv, out_point);
 
-    light_pos = ApplyMat4(T, light_pos);
-
-    glm::vec3 ps_color = m_textures[id]->getPixel(mintex[0], mintex[1]);
-    glm::vec3 mycolor = Phong(dmin, normal, light_pos, my_ray.m_start, ps_color);
+    glm::vec3 ps_color = m_textures[0]->getPixel(mintex[0], mintex[1]);
+    glm::vec3 mycolor = Phong(loc_pos, normal, light_pos, my_ray.m_start, ps_color);
 
 
     /*float cos_psi = glm::dot(glm::normalize(light_pos - dmin), glm::normalize(normal));
@@ -100,6 +101,8 @@ glm::vec3 Model::getColor(const SRay &m_ray, glm::vec3 out_point, glm::vec3 norm
         //fprintf(stderr, "Can see light\n");
         xa = coeff_diff;
 
+    } else {
+        mycolor = shade_coeff;
     }
 
     glm::vec3 specc = glm::vec3(0, 0, 0);
@@ -123,11 +126,12 @@ bool Model::IntersectRay(const SRay &m_ray, glm::vec3 &out_point, glm::vec3 &out
     glm::vec3 dmin = glm::vec3(BIG_NUM, BIG_NUM, BIG_NUM);
     glm::vec2 mintex;
     glm::vec3 normal;
-    SRay my_ray;
+    /*SRay my_ray;
     my_ray.level_id = m_ray.level_id;
     my_ray.m_dir = ApplyMat4(Tdirinv, m_ray.m_dir);
     my_ray.m_start = ApplyMat4(Tinv , m_ray.m_start);
-
+    */
+    SRay my_ray = convert_ray(m_ray);
 
     int id = -1;
     for (unsigned i = 0; i < m_meshes.size(); i++) {
@@ -151,49 +155,52 @@ bool Model::IntersectRay(const SRay &m_ray, glm::vec3 &out_point, glm::vec3 &out
         return true;
     }
     out_point = ApplyMat4(T, dmin);
+    out_norm = ApplyMat4(Tdir, normal);
+    texcoord = mintex;
 
 
-    glm::vec3 light_pos = m_scene.get_LigthPos();
-    glm::vec3 tmnormal = ApplyMat4(Tdir, normal);
-    if (glm::dot(tmnormal, light_pos - out_point) < 0) {
-        normal = -normal;
-    }
+
+//    glm::vec3 light_pos = m_scene.get_LigthPos();
+//    glm::vec3 tmnormal = ApplyMat4(Tdir, normal);
+//    if (glm::dot(tmnormal, light_pos - out_point) < 0) {
+//        normal = -normal;
+//    }
 
 
-    light_pos = ApplyMat4(T, light_pos);
+//    light_pos = ApplyMat4(T, light_pos);
 
-    glm::vec3 ps_color = m_textures[id]->getPixel(mintex[0], mintex[1]);
-    glm::vec3 mycolor = Phong(dmin, normal, light_pos, my_ray.m_start, ps_color);
-
-
-    /*float cos_psi = glm::dot(glm::normalize(light_pos - dmin), glm::normalize(normal));
-    mycolor = ps_color * cos_psi;
-    if (cos_psi < 0) {
-        mycolor = shade_coeff;
-    }*/
-    //glm::vec3 mycolor = ps_color;
+//    glm::vec3 ps_color = m_textures[id]->getPixel(mintex[0], mintex[1]);
+//    glm::vec3 mycolor = Phong(dmin, normal, light_pos, my_ray.m_start, ps_color);
 
 
-    float xa = 1.0f;
-    float ya = coeff_spec;
-    if ( m_scene.LightTrace(out_point)) {
-        //fprintf(stderr, "Can see light\n");
-        xa = coeff_diff;
+//    /*float cos_psi = glm::dot(glm::normalize(light_pos - dmin), glm::normalize(normal));
+//    mycolor = ps_color * cos_psi;
+//    if (cos_psi < 0) {
+//        mycolor = shade_coeff;
+//    }*/
+//    //glm::vec3 mycolor = ps_color;
 
-    }
 
-    glm::vec3 specc = glm::vec3(0, 0, 0);
-    if (m_type != DIFFUSE_MODEL && m_ray.level_id < MAX_DEPTH) {
-        SRay ray2;
-        ray2.level_id = m_ray.level_id + 1;
-        ray2.m_start = out_point;
-        glm::vec3 tnorm = ApplyMat4(Tdir, normal);
-        ray2.m_dir = glm::reflect(glm::normalize(out_point - m_ray.m_start),
-                                  tnorm);
+//    float xa = 1.0f;
+//    float ya = coeff_spec;
+//    if ( m_scene.LightTrace(out_point)) {
+//        //fprintf(stderr, "Can see light\n");
+//        xa = coeff_diff;
 
-        specc = m_scene.TraceRay(ray2);
-    }
-    coutput = xa * mycolor + ya * specc;
+//    }
+
+//    glm::vec3 specc = glm::vec3(0, 0, 0);
+//    if (m_type != DIFFUSE_MODEL && m_ray.level_id < MAX_DEPTH) {
+//        SRay ray2;
+//        ray2.level_id = m_ray.level_id + 1;
+//        ray2.m_start = out_point;
+//        glm::vec3 tnorm = ApplyMat4(Tdir, normal);
+//        ray2.m_dir = glm::reflect(glm::normalize(out_point - m_ray.m_start),
+//                                  tnorm);
+
+//        specc = m_scene.TraceRay(ray2);
+//    }
+//    coutput = xa * mycolor + ya * specc;
     return true;
 }
 

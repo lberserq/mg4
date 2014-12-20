@@ -26,7 +26,7 @@ struct SCamera
   std::vector<glm::vec3> m_pixels;  // Pixel array
 
   SCamera():
-      m_pos(glm::vec3(0, 0, 10)),
+      m_pos(glm::vec3(0, 0, 20)),
       m_forward(glm::vec3(0, 0, -1)),
       m_right(glm::vec3(1, 0, 0)),
       m_up(glm::vec3(0, 1, 0)),
@@ -83,4 +83,4 @@ glm::vec3  VMin(const glm::vec3 &a, const glm::vec3 &b);
 glm::vec2  VMin(const glm::vec2 &a, const glm::vec2 &b);
 
 const double M_EPS = 1e-5;
-const int MAX_DEPTH = 5;
+const int MAX_DEPTH = 3;

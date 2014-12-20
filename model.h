@@ -28,6 +28,7 @@ class Model
     glm::vec3 Tr;
     float oxz_rot;
     float oy_rot;
+    float scale_coeff;
     glm::mat4 T;
     glm::mat4 Tinv;
     glm::mat4 Tdir;
@@ -48,6 +49,7 @@ class Model
         res = glm::rotate(res, oy_rot, glm::vec3(0, 0, 1));
         // return res;
         Tdir = res;
+
         Tdirinv = glm::inverse(Tdir);
     }
 
@@ -63,6 +65,7 @@ public:
         m_type(type),
         m_scene(m_parent){
         coeff_diff = 0.5, coeff_spec = 0.5;
+        scale_coeff = 1.0f;
         switch (type) {
         case REFLECT_ALL:
             coeff_diff = 0.0f;
@@ -76,8 +79,17 @@ public:
             coeff_diff = 1.0f;
             coeff_spec = 0.0f;
         }
-       fix_vert();
+        fix_vert();
     }
+
+    void rescale(float x) {
+        T = glm::scale(T, x * glm::vec3(1.f, 1.f, 1.f));
+        Tdir = glm::scale(Tdir, x * glm::vec3(1.f, 1.f, 1.f));
+        Tinv = glm::inverse(T);
+        Tdirinv = glm::inverse(Tdir);
+
+    }
+
     bool isPlane() {
         return (m_meshes.size() == 1 &&  m_meshes[0]->isPlane());
     }
@@ -88,8 +100,10 @@ public:
                       glm::vec3 &coutput,
                       bool intersection_only = false);
     void set_coeff(float dif, float spec) {
-        coeff_diff = dif;
-        coeff_spec = spec;
+        if (m_type == FRENEL_MODEL) {
+            coeff_diff = dif;
+            coeff_spec = spec;
+        }
     }
 
     void set_place(glm::vec3 placement, float angoxz, float angy) {

@@ -84,7 +84,7 @@ public:
             textures.push_back(t_pool[idj + i % m_last_t]);
 
         }
-        m_last_k = m_last_t = 0;
+        //m_last_k = m_last_t = 0;
         return new Model(parent, meshes, textures, type);
     }
 
@@ -105,7 +105,7 @@ Mesh * genPlane(glm::vec3 tr[4], float w, float h)
 
 void CScene::genBox() {
     glm::vec3 tr[4];
-    float al = 5;
+    float al = 7.5;
     tr[0] = al * glm::vec3(-1, -1, -1);
     tr[1] = al * glm::vec3(-1, -1,  1);
     tr[2] = al * glm::vec3(1, -1,   1);
@@ -172,43 +172,56 @@ void CScene::genBox() {
     m_models.push_back(rightm);
     m_models.push_back(forwm);
 
-    Light_pos = (al - 2.0f) * glm::vec3(1, 1, 1);
+    Light_pos = (al - 0.5f) * glm::vec3(1, 1, 1);
 
 
 }
 
 void CScene::setupScene()
 {
+    Model *tmp;
     //pool.MPoolLoadFile("/home/lberserq/models/rabbit.3DS");
     //pool.MPoolLoadFile("models/highpolygonal/Chess.3DS");
-    pool.MPoolLoadFile("models/Crystal2.3DS");
-    //pool.MPoolLoadFile("/home/lberserq/models/cube.3DS");
-    std::vector<const char *> tex = {"models/textures/LR.bmp"};
-    pool.LoadTexFile(tex);
-    Model *tmp = pool.getLast(*this, REFLECT_ALL);
-    tmp->set_place(glm::vec3(0, 0, 0), 45, 45);
+    //    pool.MPoolLoadFile("models/Crystal2.3DS");
+    //    //pool.MPoolLoadFile("/home/lberserq/models/cube.3DS");
+    //    std::vector<const char *> tex = {"models/textures/LR.bmp"};
+    //    pool.LoadTexFile(tex);
+    //    tmp = pool.getLast(*this, REFLECT_ALL);
+    //    tmp->set_place(glm::vec3(0, 0, 0), 45, 45);
+    //    m_models.push_back(tmp);
+    pool.LoadTexFile("models/textures/LR.bmp");
+    pool.MPoolLoadFile("/home/lberserq/models/monkey.3DS");
+
+    tmp = pool.getLast(*this, DIFFUSE_MODEL);
+    tmp->set_place(glm::vec3(0, -5, 0), 0, 0);
+
     m_models.push_back(tmp);
+
 
     pool.MPoolLoadFile("/home/lberserq/models/rabbit.3DS");
-
     tmp = pool.getLast(*this, FRENEL_MODEL);
-    tmp->set_place(glm::vec3(2, -1, 2), 0, 0);
-
-    m_models.push_back(tmp);
-
-
-    pool.MPoolLoadFile("/home/lberserq/models/monkey.3DS");
-    tmp = pool.getLast(*this, DIFFUSE_MODEL);
     tmp->set_place(glm::vec3(-2, -2, -3), 0, 0);
 
     m_models.push_back(tmp);
 
-    /*for (int i = 0; i < 10; i++) {
-        M_TYPE type = static_cast<M_TYPE>(i % 3);
-        tmp = pool.getLast(*this, type);
-        tmp->set_place(glm::vec3(-2 + i, -2 + i, -3 + i), 0, 0);
-        m_models.push_back(tmp);
-    }*/
+    for (int i = -4; i < 5; i+=4)
+        for (int j = -4; j < 1; j+=4)
+            for (int k = -4; k < 5; k+=4) {
+                int x = (i > 0) * 4 + (j > 0) * 2 + (k > 0);
+                M_TYPE type = static_cast<M_TYPE>(x % 3);
+                tmp = pool.getLast(*this, type);
+                //tmp->set_place(glm::vec3(-2 + i, -2 + i, -3 + i), 0, 0);
+                glm::vec3 pos= glm::vec3(i, j, k);
+                if (k > 0) {
+                    pos[0] *= 0.3f;
+                    pos[1] *= 0.3f;
+                    tmp->rescale(0.3);
+                }
+                //glm::vec3 pos = glm::vec3(-2 + (i + j + 1) * 2, -5 + j, -2 + j);
+                tmp->set_place(pos, 45 + (x - 2) * 15, 45);
+                tmp->set_coeff(std::abs(x) * 0.01f * i, 1 - std::abs(x) * 0.01f);
+                m_models.push_back(tmp);
+            }
 
     genBox();
 
@@ -283,9 +296,10 @@ glm::vec3 CScene::TraceRay(const SRay &ray)
             }
         }
     }
-    /*if (tmp != NULL) {
+    if (tmp != NULL) {
         color = tmp->getColor(ray, point, mnorm, mtex);
-    }*/ color = c;
+    }
+    //color = c;
     return color;
 }
 
