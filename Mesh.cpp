@@ -187,6 +187,8 @@ std::vector<Mesh *> getMeshes(std::string &fname)
     for (int i = 0; i < cnt; i++) {
         LMesh t_mesh = importer->GetMesh(i);
         int tr_cnt = t_mesh.GetTriangleCount();
+        fprintf(stderr, "Model polygons %d\n", tr_cnt);
+
         Mesh *current_mesh = new  Mesh();
         Sphere sphr;
         glm::vec3 vert_min = glm::vec3(BIG_NUM, BIG_NUM, BIG_NUM), vert_max = glm::vec3(0, 0, 0);

@@ -190,7 +190,7 @@ void CScene::setupScene()
     //    tmp->set_place(glm::vec3(0, 0, 0), 45, 45);
     //    m_models.push_back(tmp);
     pool.LoadTexFile("models/textures/LR.bmp");
-    pool.MPoolLoadFile("/home/lberserq/models/monkey.3DS");
+    pool.MPoolLoadFile("/home/lberserq/models/rabbit.3DS");
 
     tmp = pool.getLast(*this, DIFFUSE_MODEL);
     tmp->set_place(glm::vec3(0, -5, 0), 0, 0);
@@ -198,13 +198,13 @@ void CScene::setupScene()
     m_models.push_back(tmp);
 
 
-    pool.MPoolLoadFile("/home/lberserq/models/rabbit.3DS");
+    pool.MPoolLoadFile("/home/lberserq/models/monkey.3DS");
     tmp = pool.getLast(*this, FRENEL_MODEL);
     tmp->set_place(glm::vec3(-2, -2, -3), 0, 0);
 
     m_models.push_back(tmp);
 
-    for (int i = -4; i < 1; i+=4)
+    /*for (int i = -4; i < 1; i+=4)
         for (int j = -4; j < 1; j+=4)
             for (int k = -4; k < 1; k+=4) {
                 int x = (i >= 0) * 4 + (j >= 0) * 2 + (k >= 0);
@@ -212,7 +212,7 @@ void CScene::setupScene()
                 fprintf(stderr, "Type %d %d\n", x, type);
                 tmp = pool.getLast(*this, type);
                 //tmp->set_place(glm::vec3(-2 + i, -2 + i, -3 + i), 0, 0);
-                glm::vec3 pos= glm::vec3(-5 + i, j, k);
+                glm::vec3 pos= glm::vec3(4 + i, j, k);
                 if (k >= 0) {
                     pos[0] *= 0.3f;
                     pos[1] *= 0.3f;
@@ -222,7 +222,50 @@ void CScene::setupScene()
                 tmp->set_place(pos, 45 + (x - 2) * 15, 45);
                 tmp->set_coeff(std::abs(x) * 0.01f * i, 1 - std::abs(x) * 0.01f);
                 m_models.push_back(tmp);
-            }
+            }*/
+
+
+    tmp = pool.getLast(*this, FRENEL_MODEL);
+    tmp->set_place(glm::vec3(-5, -4, -3), 0, 0);
+    m_models.push_back(tmp);
+
+
+    tmp = pool.getLast(*this, DIFFUSE_MODEL);
+    tmp->set_place(glm::vec3(5, 3, 4), 90, 0);
+    tmp->rescale(0.6);
+    m_models.push_back(tmp);
+
+
+    tmp = pool.getLast(*this,  REFLECT_ALL);
+    tmp->set_place(glm::vec3(5, -3, 4), 25, 90);
+    tmp->rescale(1.2);
+    m_models.push_back(tmp);
+
+
+    tmp = pool.getLast(*this, DIFFUSE_MODEL);
+    tmp->set_place(glm::vec3(5, 3, -4), 180, 0);
+    tmp->rescale(0.9);
+    m_models.push_back(tmp);
+
+
+    tmp = pool.getLast(*this, REFLECT_ALL);
+    tmp->set_place(glm::vec3(-5, 3, 4), 25, 45);
+    tmp->rescale(0.9);
+    m_models.push_back(tmp);
+
+
+    tmp = pool.getLast(*this, FRENEL_MODEL);
+    tmp->set_place(glm::vec3(-5, -3, 4), 45, 50);
+    tmp->rescale(1.5);
+    m_models.push_back(tmp);
+
+    tmp = pool.getLast(*this, DIFFUSE_MODEL);
+    tmp->set_place(glm::vec3(-5, 3, -4), 10, 0);
+    tmp->rescale(1.3);
+    m_models.push_back(tmp);
+
+
+
 
     genBox();
 

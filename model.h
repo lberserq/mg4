@@ -45,6 +45,7 @@ class Model
 
     void gen_noTr() {
         glm::mat4 res;
+        res = glm::scale(res, scale_coeff * glm::vec3(1.f, 1.f, 1.f));
         res = glm::rotate(res, oxz_rot, glm::vec3(0, 1, 0));
         res = glm::rotate(res, oy_rot, glm::vec3(0, 0, 1));
         // return res;
@@ -72,8 +73,8 @@ public:
             coeff_spec = 1.0f;
             break;
         case FRENEL_MODEL:
-            coeff_diff = 0.7;
-            coeff_spec = 0.3;
+            coeff_diff = 0.6;
+            coeff_spec = 0.4;
             break;
         case DIFFUSE_MODEL:
             coeff_diff = 1.0f;
@@ -83,11 +84,9 @@ public:
     }
 
     void rescale(float x) {
-        T = glm::scale(T, x * glm::vec3(1.f, 1.f, 1.f));
-        Tdir = glm::scale(Tdir, x * glm::vec3(1.f, 1.f, 1.f));
-        Tinv = glm::inverse(T);
-        Tdirinv = glm::inverse(Tdir);
-
+        scale_coeff = x;
+        gen_noTr();
+        gen_full();
     }
 
     bool isPlane() {

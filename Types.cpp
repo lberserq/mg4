@@ -27,7 +27,8 @@ bool Triangle::RayIntersection(const SRay &ray, glm::vec3 &point, glm::vec3 &out
 
     float t = glm::dot(Q, edge2) / det;
     if (t > M_EPS) {
-        point = (1 - u - v) * b + u * c + v * a;
+        //point = (1 - u - v) * b + u * c + v * a;
+        point = ray.m_start + t * ray.m_dir;
         out_norm = (1 - u - v) * nb + u * nc + v * na;
         return true;
     }
@@ -37,6 +38,7 @@ bool Triangle::RayIntersection(const SRay &ray, glm::vec3 &point, glm::vec3 &out
 
 int Triangle::IntersectRay(const SRay &ray, glm::vec3& out_point, glm::vec3 &out_norm)
 {
+    return RayIntersection(ray, out_point, out_norm);
     glm::vec3 e1 = b - a;
     glm::vec3 e2 = c - a;
     glm::vec3 m_norm = glm::normalize(glm::cross(e1, e2));

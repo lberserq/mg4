@@ -38,22 +38,18 @@ void CTracer::RenderImage(int xRes, int yRes)
     int i, j;
     int cnt = yRes / 80;
     cnt = 80 / cnt;
-#pragma omp parallel
-    {
-#pragma omp for firstprivate(j) lastprivate(i)
-        for(i = 0; i < yRes; i++) {
-            for(j = 0; j < xRes; j++)
-            {
-                SRay ray = MakeRay(uvec2(j, i));
-                // fprintf(stderr, "Tracing Ray for Pixel %d %d\n", j, i);
-                //fprintf(stderr, "Tracing Ray %d of %d\n", i * xRes + j, xRes * yRes);
-                m_camera.m_pixels[i * xRes + j] = TraceRay(ray);
-            }
-            if (i % (yRes / cnt)) {
-                fprintf(stderr, "-");
-            }
+#pragma omp parallel for firstprivate(j) lastprivate(i) schedule(dynamic, xRes)
+    for(i = 0; i < yRes; i++) {
+        for(j = 0; j < xRes; j++)
+        {
+            SRay ray = MakeRay(uvec2(j, i));
+            // fprintf(stderr, "Tracing Ray for Pixel %d %d\n", j, i);
+            //fprintf(stderr, "Tracing Ray %d of %d\n", i * xRes + j, xRes * yRes);
+            m_camera.m_pixels[i * xRes + j] = TraceRay(ray);
         }
-#pragma omp barrier
+//        if (i % (yRes / cnt)) {
+//            fprintf(stderr, "-");
+//        }
     }
 }
 
@@ -70,7 +66,7 @@ void CTracer::SaveImageToFile(std::string fileName)
     int textureDisplacement = 0;
     //#pragma omp parallel for
     for (int i = height - 1; i >= 0; i--) {
-    //for (int i = 0; i < height - 1; i++) {
+        //for (int i = 0; i < height - 1; i++) {
         for (int j = 0; j < width; j++) {
             vec3 color = m_camera.m_pixels[textureDisplacement + j];
             RGBApixel pxl;
