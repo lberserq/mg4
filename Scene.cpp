@@ -207,12 +207,13 @@ void CScene::setupScene()
     for (int i = -4; i < 1; i+=4)
         for (int j = -4; j < 1; j+=4)
             for (int k = -4; k < 1; k+=4) {
-                int x = (i > 0) * 4 + (j > 0) * 2 + (k > 0);
+                int x = (i >= 0) * 4 + (j >= 0) * 2 + (k >= 0);
                 M_TYPE type = static_cast<M_TYPE>(x % 3);
+                fprintf(stderr, "Type %d %d\n", x, type);
                 tmp = pool.getLast(*this, type);
                 //tmp->set_place(glm::vec3(-2 + i, -2 + i, -3 + i), 0, 0);
-                glm::vec3 pos= glm::vec3(i, j, k);
-                if (k > 0) {
+                glm::vec3 pos= glm::vec3(-5 + i, j, k);
+                if (k >= 0) {
                     pos[0] *= 0.3f;
                     pos[1] *= 0.3f;
                     tmp->rescale(0.3);
